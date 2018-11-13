@@ -1,2 +1,2 @@
-# NAAM: Jikke van den Ende
+# Naam: Jikke van den Ende
 # GitHub pages: LINK
