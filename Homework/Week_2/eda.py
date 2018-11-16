@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 
 INPUT_CSV = 'input.csv'
 
+
 def load_file(csv_file):
     """
     This function loads the file
@@ -21,6 +22,7 @@ def load_file(csv_file):
     file = pd.read_csv(csv_file)
 
     return file
+
 
 def preprocess_file(read_file):
     """
@@ -34,7 +36,7 @@ def preprocess_file(read_file):
                                               "dollars"].str.replace(' dollars',
                                               '')
 
-    # Changes comma's in strings of columns of interest into periods
+    # Changes comma's in columns of interest into periods
     read_file["Pop. Density (per sq. mi.)"] = read_file["Pop. Density (per sq. "
                                               "mi.)"].str.replace(',','.')
     read_file["Infant mortality (per 1000 births)"] = read_file["Infant "
@@ -53,6 +55,7 @@ def preprocess_file(read_file):
 
     return read_file
 
+
 def central_tendency(data):
     """
     This function calculates the middle of a distribution of values.
@@ -69,13 +72,27 @@ def central_tendency(data):
     data_mode = data.mode()[0]
     data_std = np.std(data)
 
+    # Removes outlier from data
+    data = remove_outlier(data)
+
     # Creates a histogram of given data
     plt.hist(data, bins=50)
-    plt.axis([0, 50000, 0, 150])
+    plt.axis([0, 50000, 0, 70])
     plt.ylabel("Frequency")
     plt.grid(True)
 
     return f'Mean: {data_mean}, Median: {data_median}, Mode: {data_mode}, Standard Deviation: {data_std}'
+
+
+def remove_outlier(data):
+    """
+    This function removes an outlier (maximum) value from given data.
+    """
+    outlier = data.idxmax()
+    data = data.drop([outlier])
+
+    return data
+
 
 def five_number_summary(data):
     """
@@ -90,6 +107,7 @@ def five_number_summary(data):
 
     return descriptives
 
+
 def create_boxplot(column_name):
     """
     This function creates a boxplot of given data.
@@ -100,10 +118,13 @@ def create_boxplot(column_name):
 
     return boxplot
 
-def create_json_file(data):
+
+def create_json_file(file):
     """
     This function creates a json file.
     """
+    file = file.set_index('Country')
+    file.to_json('eda.json', orient='index')
 
 if __name__ == "__main__":
 
@@ -112,7 +133,7 @@ if __name__ == "__main__":
     # Preprocess file
     file = preprocess_file(file)
 
-    # Calculate central tencency of GDP and show results in histogram
+    # Calculate central tencency of GDP and show histogram of data
     ct = central_tendency(file["GDP ($ per capita) dollars"])
     # Name title and xlabel here (because in the general central_tendency function you
     # don't know which data you use)
