@@ -26,8 +26,8 @@ def convert_into_json_file(file):
         for row in reader:
             # Writes rows into json file
             json.dump(row, jsonfile)
-
-            #jsonfile.write('\n')
+            # Points at next row in json file
+            jsonfile.write('\n')
 
     return jsonfile
 
