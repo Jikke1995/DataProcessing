@@ -2,7 +2,7 @@
 # Name: Jikke van den Ende
 # Student number: 10787593
 """
-This script preprocesses data and visually analyses it.
+This script preprocesses data and analysises it.
 """
 
 import csv

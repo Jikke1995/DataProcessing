@@ -9,22 +9,20 @@ import csv
 import pandas as pd
 import json
 
-INPUT_CSV = ""
+INPUT_CSV = "05.gediplomeerden-wo-2017.csv"
+OUTPUT_JSON = "05.gediplomeerden-wo-2017.json"
 
+def convert_into_json_file(file):
+    jsonfile = open(OUTPUT_JSON, 'w')
+    with open(file, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        # Iterate over every row in CSV file
+        for row in reader:
+            # Store year and rating of movie
+            json.dump(row, jsonfile)
+            jsonfile.write('\n')
 
-def load_csv_file(file):
-    file = pd.read_csv(file)
-
-    return file
-
-
-def create_json_file(file):
-    file = file.set_index('Country')
-    file.to_json('eda.json', orient='index')
-
-    return file
-
+    return jsonfile
 
 if __name__ == "__main__":
-    csv_file = load_csv_file(INPUT_CSV)
-    json_file = create_json_file(csv_file)
+    jsonfile = convert_into_json_file(INPUT_CSV)
