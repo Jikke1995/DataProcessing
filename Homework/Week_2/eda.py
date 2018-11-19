@@ -2,7 +2,7 @@
 # Name: Jikke van den Ende
 # Student number: 10787593
 """
-This script ...
+This script preprocesses data and visually analyses it.
 """
 
 import csv
@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import json
 
 INPUT_CSV = 'input.csv'
 
