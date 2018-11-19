@@ -13,14 +13,21 @@ INPUT_CSV = "05.gediplomeerden-wo-2017.csv"
 OUTPUT_JSON = "05.gediplomeerden-wo-2017.json"
 
 def convert_into_json_file(file):
+    """
+    This function opens the CSV file and writes a JSON file with CSV data.
+    """
+    # Open an empty json file
     jsonfile = open(OUTPUT_JSON, 'w')
+
+    # Opens CSV file
     with open(file, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         # Iterate over every row in CSV file
         for row in reader:
-            # Store year and rating of movie
+            # Writes rows into json file
             json.dump(row, jsonfile)
-            jsonfile.write('\n')
+
+            #jsonfile.write('\n')
 
     return jsonfile
 
