@@ -22,9 +22,13 @@
           console.log(JSON.parse(txtFile.responseText));
       }
   }
-txtFile.open("GET", fileName);
-txtFile.send();
-console.log("Hello world!");
+  txtFile.open("GET", fileName);
+  txtFile.send();
+
+  txtFile.forEach(function(element) {
+  console.log(element);
+  });
+
 </script>
 
 </body>
