@@ -19,15 +19,15 @@ def convert_into_json_file(file):
     # Open an empty json file
     jsonfile = open(OUTPUT_JSON, 'w')
 
-    # Opens CSV file
-    with open(file, newline='') as csvfile:
-        reader = csv.DictReader(csvfile)
-        # Iterate over every row in CSV file
-        for row in reader:
-            # Writes rows into json file
-            json.dump(row, jsonfile)
-            # Points at next row in json file
-            jsonfile.write('\n')
+    # Open the csv file
+    csv_file = open(INPUT_CSV, 'rU')
+
+    # Read csv file
+    reader = csv.DictReader(csv_file)
+
+    # Create jsonfile
+    out = json.dumps([row for row in reader])
+    jsonfile.write(out)
 
     return jsonfile
 

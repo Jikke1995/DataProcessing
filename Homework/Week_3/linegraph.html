@@ -1,0 +1,31 @@
+<!--
+  Name: Jikke van den Ende
+  Student number: 10787593
+  This script creates a linegraph of given data
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hallo</title>
+</head>
+<body>
+
+<canvas>
+</canvas>
+
+<script>
+  var fileName = "05.gediplomeerden-wo-2017.json";
+  var txtFile = new XMLHttpRequest();
+  txtFile.onreadystatechange = function() {
+      if (txtFile.readyState === 4 && txtFile.status == 200) {
+          console.log(JSON.parse(txtFile.responseText));
+      }
+  }
+txtFile.open("GET", fileName);
+txtFile.send();
+console.log("Hello world!");
+</script>
+
+</body>
+</html>
