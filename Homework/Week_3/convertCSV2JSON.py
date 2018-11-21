@@ -10,7 +10,7 @@ import pandas as pd
 import json
 
 INPUT_CSV = "05.gediplomeerden-wo-2017.csv"
-OUTPUT_JSON = "05.gediplomeerden-wo-2017.json"
+OUTPUT_JSON = "data.json"
 
 def convert_into_json_file(file):
     """
@@ -23,10 +23,18 @@ def convert_into_json_file(file):
     csv_file = open(INPUT_CSV, 'rU')
 
     # Read csv file
-    reader = csv.DictReader(csv_file)
+    reader = csv.DictReader(csv_file, delimiter=';')
+    data = {}
+    for row in reader:
+        if row["INSTELLINGSNAAM ACTUEEL"] == 'Universiteit van Amsterdam' and row["OPLEIDINGSNAAM ACTUEEL"] == 'B Psychologie' and row["OPLEIDINGSVORM"] == 'voltijd onderwijs':
+           data[2012] = row["2012 VROUW"]
+           data[2013] = row["2013 VROUW"]
+           data[2014] = row["2014 VROUW"]
+           data[2015] = row["2015 VROUW"]
+           data[2016] = row["2016 VROUW"]
 
     # Create jsonfile
-    out = json.dumps([row for row in reader])
+    out = json.dumps(data)
     jsonfile.write(out)
 
     return jsonfile
