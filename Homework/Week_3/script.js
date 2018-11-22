@@ -10,78 +10,117 @@ var fileName = "data.json";
 var txtFile = new XMLHttpRequest();
 txtFile.onreadystatechange = function() {
     if (txtFile.readyState === 4 && txtFile.status == 200) {
-      var array = JSON.parse(txtFile.responseText);
-      ytransform = createTransform([0,300], [0, myCanvas.height]);
-      xtransform = createTransform([2012, 2016], [0, 250]);
 
+      // Store data
+      var array = JSON.parse(txtFile.responseText);
+
+      // Create Canvas
       var canvas = document.getElementById('myCanvas');
       var ctx = canvas.getContext('2d');
 
-      var xpading = 30
-      var ypading = 30
+      // Create variables
+      var xpadding = 40;
+      var ypadding = 20;
+      var graph_height = 200;
+      var graph_width = 300;
+      var label_extra = 20;
+      var maxY = maximum_value(array);
 
+      // Create dialog
       ctx.beginPath();
-      ctx.moveTo(xpading, 0);
-      ctx.lineTo(xpading, myCanvas.height - ypading);
-      ctx.lineTo(myCanvas.width + xpading, myCanvas.height - ypading);
+      ctx.moveTo(xpadding, ypadding);
+      ctx.lineTo(xpadding, graph_height + ypadding);
+      ctx.lineTo(xpadding + graph_width, graph_height + ypadding);
       ctx.stroke();
 
-      Object.keys(array).forEach(function(key) {
-          ctx.fillText(key, 20 + xtransform(key), myCanvas.height - ypading + 20);
-      });
+      // Create functions to calculate the coordinates of data point in canvas
+      ytransform = createTransform([0,maxY], [ypadding, graph_height + ypadding]);
+      xtransform = createTransform([2012, 2016], [xpadding, graph_width]);
 
-      // ctx.textAlign = 'right';
-      // ctx.textBaseline = 'middle';
+
+      // Give labels (years) to x-axis
+      Object.keys(array).forEach(function(key) {
+          ctx.fillText(key,xtransform(key), graph_height + ypadding + label_extra);
+      });
+      ctx.stroke();
+
       //
-      // for(var i = 0; i < 300; i+= 10) {
-      //     ctx.fillText(i, xpadding - 20, ytransform(i))
+      // // Label x-axis
+      // ctx.fillText("Year", myCanvas.width / 2, myCanvas.height + ypadding);
+      //
+      // ctx.textAlign = "right"
+      // ctx.textBaseline = "middle";
+      //
+      // for(var i = 0; i < 300; i += 40) {
+      //     ctx.fillText(i, xpadding - 10, ytransform(maxY - i));
       // }
+      //
+      //
+      // // Iterate over datapoints and draw lines between the coordinates in canvas
+      // Object.keys(array).forEach(function(key) {
+      //     xcoordinate = xtransform(key);
+      //     ycoordinate =  maxY - ytransform(array[key]);
+      //     if(key == '2012') {
+      //         ctx.strokeStyle = 'blue'
+      //         ctx.beginPath();
+      //         ctx.moveTo(xpadding + xcoordinate - label_extra, ycoordinate - ypadding);
+      //     }
+      //     else {
+      //         ctx.lineTo(xpadding + xcoordinate - label_extra, ycoordinate - ypadding);
+      //     }
+      // });
+      // ctx.stroke();
+      //
+      // ctx.fillStyle = 'blue';
+      //
+      // // Draw points at any datapoint
+      // Object.keys(array).forEach(function(key) {
+      //   ctx.beginPath();
+      //   ctx.arc(xpadding + xtransform(key) - label_extra, maxY - ytransform(array[key]) - ypadding, 4, 0, Math.PI * 2, true);
+      //   ctx.fill();
+      // });
+      // ctx.stroke();
 
 
-      // Create Graph Line
-      ctx.beginPath();
-      ctx.strokeSyle = '#f00';
-
-      Object.keys(array).forEach(function(key) {
-          xcoordinate = xtransform(key);
-          ycoordinate =  300 - ytransform(array[key]);
-          if(key == '2012') {
-              ctx.moveTo(xpading + xcoordinate, ycoordinate - ypading);
-          }
-          else {
-              ctx.lineTo(xpading + xcoordinate, ycoordinate - ypading);
-          }
-      });
-
-      ctx.stroke();
-
-      ctx.fillStyle = '#333';
-
-      Object.keys(array).forEach(function(key) {
-        ctx.beginPath();
-        ctx.arc(xpading + xtransform(key), 300 - ytransform(array[key]) - ypading, 4, 0, Math.PI * 2, true);
-        ctx.fill();
-      });
-
-      function createTransform(domain, range){
       /**
-      Domain is a two-element array of the data bounds [domain_min, domain_max].
-      Range is a two-element array of the screen bounds [range_min, range_max].
+      Function to calculate the coordinates of datapoints in a given domain
+      (the minimum and maximum value of the datapoint) and the range of a
+      canvas.
       */
-          var domain_min = domain[0]
-          var domain_max = domain[1]
-          var range_min = range[0]
-          var range_max = range[1]
+      function createTransform(domain, range){
+
+          var domain_min = domain[0];
+          var domain_max = domain[1];
+          var range_min = range[0];
+          var range_max = range[1];
 
           // formulas to calculate the alpha and the beta
-          var alpha = (range_max - range_min) / (domain_max - domain_min)
-          var beta = range_max - alpha * domain_max
+          var alpha = (range_max - range_min) / (domain_max - domain_min);
+          var beta = range_max - alpha * domain_max;
 
           // returns the function for the linear transformation (y= a * x + b)
           return function(x){
             return alpha * x + beta;
           }
       }
+
+      /**
+      This function calculates the highest datapoint value
+      */
+      function maximum_value(array) {
+
+          var max_value = 0;
+
+          Object.keys(array).forEach(function(key) {
+            if(array[key] > max_value) {
+              max_value = array[key];
+            }
+          });
+
+          return max_value;
+      }
+
+
     }
 }
 
