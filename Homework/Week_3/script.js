@@ -19,7 +19,7 @@ txtFile.onreadystatechange = function() {
       var ctx = canvas.getContext('2d');
 
       // Create variables
-      var xpadding = 40;
+      var xpadding = 60;
       var ypadding = 20;
       var graph_height = 200;
       var graph_width = 300;
@@ -37,49 +37,58 @@ txtFile.onreadystatechange = function() {
       ytransform = createTransform([0,maxY], [ypadding, graph_height + ypadding]);
       xtransform = createTransform([2012, 2016], [xpadding, graph_width]);
 
-
       // Give labels (years) to x-axis
       Object.keys(array).forEach(function(key) {
-          ctx.fillText(key,xtransform(key), graph_height + ypadding + label_extra);
+          ctx.fillText(key,xtransform(key) + label_extra, graph_height + ypadding + label_extra);
       });
       ctx.stroke();
 
-      //
-      // // Label x-axis
-      // ctx.fillText("Year", myCanvas.width / 2, myCanvas.height + ypadding);
-      //
-      // ctx.textAlign = "right"
-      // ctx.textBaseline = "middle";
-      //
-      // for(var i = 0; i < 300; i += 40) {
-      //     ctx.fillText(i, xpadding - 10, ytransform(maxY - i));
-      // }
-      //
-      //
-      // // Iterate over datapoints and draw lines between the coordinates in canvas
-      // Object.keys(array).forEach(function(key) {
-      //     xcoordinate = xtransform(key);
-      //     ycoordinate =  maxY - ytransform(array[key]);
-      //     if(key == '2012') {
-      //         ctx.strokeStyle = 'blue'
-      //         ctx.beginPath();
-      //         ctx.moveTo(xpadding + xcoordinate - label_extra, ycoordinate - ypadding);
-      //     }
-      //     else {
-      //         ctx.lineTo(xpadding + xcoordinate - label_extra, ycoordinate - ypadding);
-      //     }
-      // });
-      // ctx.stroke();
-      //
-      // ctx.fillStyle = 'blue';
-      //
-      // // Draw points at any datapoint
-      // Object.keys(array).forEach(function(key) {
-      //   ctx.beginPath();
-      //   ctx.arc(xpadding + xtransform(key) - label_extra, maxY - ytransform(array[key]) - ypadding, 4, 0, Math.PI * 2, true);
-      //   ctx.fill();
-      // });
-      // ctx.stroke();
+      // Label total x-axis
+      ctx.fillText("Year", xpadding + graph_width / 2, myCanvas.height - ypadding - label_extra);
+
+      // Label y-axis
+      ctx.textAlign = "right"
+      ctx.textBaseline = "middle";
+      for(var i = 0; i < 300; i += 40) {
+          ctx.fillText(i, xpadding - 10, ytransform(maxY - i));
+      }
+
+
+      // Iterate over datapoints and draw lines between the coordinates in canvas
+      Object.keys(array).forEach(function(key) {
+          xcoordinate = xtransform(key);
+          ycoordinate = ytransform(maxY - array[key]);
+          if(key == '2012') {
+              console.log(xcoordinate);
+              console.log(ycoordinate);
+              ctx.strokeStyle = 'blue'
+              ctx.beginPath();
+              ctx.moveTo(xcoordinate + label_extra + 10, ycoordinate);
+          }
+          else {
+              console.log(xcoordinate);
+              console.log(maxY - ycoordinate);
+              ctx.lineTo(xcoordinate + label_extra + 10, ycoordinate);
+          }
+      });
+      ctx.stroke();
+
+      // Draw points at any datapoint
+      ctx.fillStyle = 'blue';
+      Object.keys(array).forEach(function(key) {
+          ctx.beginPath();
+          ctx.arc(xtransform(key) + label_extra + 10, ytransform(maxY - array[key]), 4, 0, Math.PI * 2, true);
+          ctx.fill();
+      });
+      ctx.stroke();
+
+      // Label total y-axis
+      ctx.fillStyle = 'black'
+      ctx.translate(12, ypadding + (graph_height / 2));
+      ctx.rotate(-0.5 * Math.PI);
+      ctx.fillText("Women graduated", xpadding - label_extra - 10, 0);
+
+
 
 
       /**
