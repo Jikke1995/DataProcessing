@@ -1,2 +1,3 @@
 # Naam: Jikke van den Ende
-# GitHub pages: LINK
+# GitHub links:  
+# https://jikke1995.github.io/DataProcessing/
