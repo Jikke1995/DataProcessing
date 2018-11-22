@@ -53,7 +53,6 @@ txtFile.onreadystatechange = function() {
           ctx.fillText(i, xpadding - 10, ytransform(maxY - i));
       }
 
-
       // Iterate over datapoints and draw lines between the coordinates in canvas
       Object.keys(array).forEach(function(key) {
           xcoordinate = xtransform(key);
@@ -87,9 +86,6 @@ txtFile.onreadystatechange = function() {
       ctx.translate(12, ypadding + (graph_height / 2));
       ctx.rotate(-0.5 * Math.PI);
       ctx.fillText("Women graduated", xpadding - label_extra - 10, 0);
-
-
-
 
       /**
       Function to calculate the coordinates of datapoints in a given domain
