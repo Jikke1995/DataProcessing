@@ -12,19 +12,29 @@ import json
 INPUT_CSV = "05.gediplomeerden-wo-2017.csv"
 OUTPUT_JSON = "data.json"
 
-def convert_into_json_file(file):
+def convert_into_json_file(data):
     """
-    This function opens the CSV file and writes a JSON file with CSV data.
+    This writes a JSON file with given CSV data.
     """
     # Open an empty json file
     jsonfile = open(OUTPUT_JSON, 'w')
 
-    # Open the csv file
-    csv_file = open(INPUT_CSV, 'rU')
+    # Write csv data into new json file
+    out = json.dumps(data)
+    jsonfile.write(out)
 
+    return jsonfile
+
+def select_data(file):
+    """
+    This function selects the data of interest from the csv file.
+    """
     # Read csv file
-    reader = csv.DictReader(csv_file, delimiter=';')
+    reader = csv.DictReader(file, delimiter=';')
     data = {}
+    # In this case, selects the data from the University of Amsterdam,
+    # the amount of woman that was graduated for fulltime Psychology
+    # over the years 2012 till 2016
     for row in reader:
         if row["INSTELLINGSNAAM ACTUEEL"] == 'Universiteit van Amsterdam' and row["OPLEIDINGSNAAM ACTUEEL"] == 'B Psychologie' and row["OPLEIDINGSVORM"] == 'voltijd onderwijs':
            data[2012] = row["2012 VROUW"]
@@ -33,11 +43,9 @@ def convert_into_json_file(file):
            data[2015] = row["2015 VROUW"]
            data[2016] = row["2016 VROUW"]
 
-    # Create jsonfile
-    out = json.dumps(data)
-    jsonfile.write(out)
-
-    return jsonfile
+    return data
 
 if __name__ == "__main__":
-    jsonfile = convert_into_json_file(INPUT_CSV)
+    csv_file = open(INPUT_CSV, 'rU')
+    data = select_data(csv_file)
+    jsonfile = convert_into_json_file(data)
