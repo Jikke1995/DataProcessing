@@ -1,7 +1,7 @@
 <!--
 Name: Jikke van den Ende
 Student number: 10787593
-This HTML file ...
+This HTML file for building a bargraph visualisation using D3.js
 -->
 
 
@@ -21,26 +21,31 @@ This HTML file ...
             var svg_width = 900;
             var svg_height = 500;
 
-            // Create ranges of window
-            var window_width = 600
-            var window_height = 200
+            // Set dimensions of the svg/graph
+            var window_width = 600;
+            var window_height = 200;
             var barpadding = 1;
             var svgpadding = 100;
+
             var start_year = 1960;
             var end_year = 2015;
 
-            // Creat title and description of bar graph
+            // Create title and description of bar graph
             d3.select("body").append("h3").text("Alcohol consumption in Australia");
             d3.select("body").append("p").text("Name: Jikke van den Ende");
             d3.select("body").append("p").text("Student number: 10787593");
             d3.select("body").append("p").text("This visualisation displays the alcohol consumption in Australia for the years 1961 to 2015. Alcohol consumption is defined as annual sales of pure alcohol in litres per person aged 15 years and older.");
 
+            // Create Canvas
             var svg = d3.select("body")
                       .append("svg")
                       .attr("width", svg_width)
                       .attr("height", svg_height)
 
+            // Load data as jsonfile
             d3.json("data.json").then(function(data) {
+
+                // Create lists for the years and the values from the data
                 values = [];
                 years = [];
                 Object.keys(data).forEach(function(key) {
@@ -48,24 +53,30 @@ This HTML file ...
                     years.push(key);
                 });
 
-                console.log(years);
-
+                // Multiply every value by 10, because otherwise the differences
+                // are too small to see in the bar chart
                 for (var i = 0; i < values.length; i++) {
                     values[i] = values[i] * 10;
                 }
 
+                // Create the scale function for the x-axis
                 var xScale = d3.scaleTime()
                                 .domain([new Date(1960, 0), new Date(2016, 0)])
                                 .range([0, window_width]);
 
+                // Create the scale funtion for the y values of the bars
                 var yScale = d3.scaleLinear()
                                 .domain([0, 16])
                                 .range([0, window_height])
 
+                // Create the scale functin for the y-axis
                 var yScaleAxis = d3.scaleLinear()
                                 .domain([0, 16])
                                 .range([window_height, 0])
 
+                // Create a rectangle for every datapiece.
+                // The last parts of this piece of code are from Michael stanaland
+                // Website: http://bl.ocks.org/mstanaland/6100713
                 var rectangles = svg.selectAll("rect")
                                     .data(values)
                                     .enter()
@@ -88,7 +99,7 @@ This HTML file ...
                                       tip.select("text").text("Alcohol consumption: " + (d / 10)  + ", Year: " + years[i]);
                                     });
 
-                // Give the ractangles a
+                // Give the ractangles their attributes
                 rectangles.attr("x", function(d, i) {
                               return svgpadding + i * (window_width / values.length);
                           })
@@ -120,17 +131,22 @@ This HTML file ...
 
             });
 
+            // Prepare the tooltip, the initial display is hidden
+            // This part of my code comes from Michael Stanaland
+            // Website: http://bl.ocks.org/mstanaland/6100713
             var tip = svg.append("g")
                           .attr("class", "tooltip")
                           .style("display", "none")
 
+            // Append a rect to the tooltip
             tip.append("rect")
                 .attr("width", 60)
                 .attr("position", "absolute")
                 .attr("height", 20)
                 .attr("fill", "white")
-                .style("opacity", 1);
+                .style("opacity", 0.5);
 
+            // Append the possibility for a piece of text for the tooltip
             tip.append("text")
                 .attr("x", 30)
                 .attr("dy", "1.2em")
