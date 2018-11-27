@@ -9,12 +9,136 @@ This HTML file ...
 <html>
     <head>
         <meta charset="utf-8">
-        <title>D3 Test</title>
+        <title>Alcohol consumption</title>
         <script type="text/javascript" src="d3/d3.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js">
+        </script>
     </head>
     <body>
         <script type="text/javascript">
-              // Your beautiful D3 code will go here
+
+            // Create ranges of SVG
+            var svg_width = 700;
+            var svg_height = 300;
+
+            // Create ranges of window
+            var window_width = 600
+            var window_height = 200
+            var barpadding = 1;
+            var svgpadding = 40;
+            var start_year = 1960;
+            var end_year = 2015;
+
+            // Creat title and description of bar graph
+            d3.select("body").append("h3").text("Alcohol consumption in Australia");
+            d3.select("body").append("p").text("Name: Jikke van den Ende");
+            d3.select("body").append("p").text("Student number: 10787593");
+            d3.select("body").append("p").text("This visualisation displays the alcohol consumption in Australia for the years 1961 to 2015. Alcohol consumption is defined as annual sales of pure alcohol in litres per person aged 15 years and older.");
+
+            var svg = d3.select("body")
+                      .append("svg")
+                      .attr("width", svg_width)
+                      .attr("height", svg_height)
+
+            d3.json("data.json").then(function(data) {
+                values = [];
+                years = [];
+                Object.keys(data).forEach(function(key) {
+                    values.push(data[key]);
+                    years.push(key);
+                });
+
+                console.log(years);
+
+                for (var i = 0; i < values.length; i++) {
+                    values[i] = values[i] * 10;
+                }
+
+                var xScale = d3.scaleTime()
+                                .domain([new Date(1960, 0), new Date(2016, 0)])
+                                .range([0, window_width]);
+
+                var yScale = d3.scaleLinear()
+                                .domain([0, 16])
+                                .range([0, window_height])
+
+                var yScaleAxis = d3.scaleLinear()
+                                .domain([0, 16])
+                                .range([window_height, 0])
+
+                var rectangles = svg.selectAll("rect")
+                                    .data(values)
+                                    .enter()
+                                    .append("rect")
+                                    .on('mouseover', function(d,i) {
+                                      tip.style("display", null)
+                                    })
+                                    .on('mouseout', function(d) {
+                                      tip.style("display", "none")
+                                      d3.select(this).attr("fill", function(d) {
+                                        return "rgb(3,0, " + (d * 1.6) + ")"
+                                      });
+                                    })
+                                    .on('mousemove', function(d, i) {
+                                      d3.select(this).attr("fill", "red")
+                                      tip.style("display", null);
+                                      var xPosition = d3.mouse(this)[0] - 100;
+                                      var yPosition = d3.mouse(this)[1] - 25;
+                                      tip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+                                      tip.select("text").text("Alcohol consumption: " + (d / 10)  + ", Year: " + years[i]);
+                                    });
+
+                // Give the ractangles a
+                rectangles.attr("x", function(d, i) {
+                              return svgpadding + i * (window_width / values.length);
+                          })
+                          .attr("y", function(d) { return window_height + svgpadding - yScale(d/10);})
+                          .attr("fill", function(d) { return "rgb(3,0, " + (d * 1.6) + ")"})
+                          .attr("width", window_width / values.length - barpadding)
+                          .attr("height", function(d) { return yScale(d / 10); });
+
+                // Add x-axis
+                var x_axis = svg.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(" + svgpadding + "," + (window_height + svgpadding) + ")")
+                                .call(d3.axisBottom(xScale))
+                                .selectAll("text")
+                                .attr("x", 4)
+                                .style("text-anchor", "middle");
+
+                // Add y-axis
+                var y_axis = svg.append("g")
+                                .attr("class", "y axis")
+                                .attr("transform", "translate(" + svgpadding + "," + svgpadding + ")")
+                                .call(d3.axisLeft(yScaleAxis))
+
+                // Add x-axis label
+                svg.append("text")
+                    .attr("transform","translate(" + (svgpadding + (window_width / 2)) + "," + (window_height + svgpadding + 40) + ")")
+                    .style("text-achor", "middle")
+                    .text("Year");
+
+            });
+
+            var tip = svg.append("g")
+                          .attr("class", "tooltip")
+                          .style("display", "none")
+
+            tip.append("rect")
+                .attr("width", 60)
+                .attr("position", "absolute")
+                .attr("height", 20)
+                .attr("fill", "white")
+                .style("opacity", 1);
+
+            tip.append("text")
+                .attr("x", 30)
+                .attr("dy", "1.2em")
+                .attr("position", "absolute")
+                .style("text-achor", "middle")
+                .attr("font-size", "12px")
+                .attr("font-weight", "bold")
+
         </script>
     </body>
 </html>
