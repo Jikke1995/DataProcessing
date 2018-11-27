@@ -83,7 +83,7 @@ This HTML file ...
                                       d3.select(this).attr("fill", "red")
                                       tip.style("display", null);
                                       var xPosition = d3.mouse(this)[0] - 100;
-                                      var yPosition = d3.mouse(this)[1] - 25;
+                                      var yPosition = d3.mouse(this)[1] - 70;
                                       tip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
                                       tip.select("text").text("Alcohol consumption: " + (d / 10)  + ", Year: " + years[i]);
                                     });
