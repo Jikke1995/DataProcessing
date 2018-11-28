@@ -10,10 +10,6 @@ function retrieveData() {
     var womenInScience = "http://stats.oecd.org/SDMX-JSON/data/MSTI_PUB/TH_WRXRS.FRA+DEU+KOR+NLD+PRT+GBR/all?startTime=2007&endTime=2015"
     var consConfFirst = "http://stats.oecd.org/SDMX-JSON/data/HH_DASH/FRA+DEU+KOR+NLD+PRT+GBR.COCONF.A/all?startTime=2007&endTime=2015"
 
-    // var consConfSecond = "https://data.mprog.nl/course/10%20Homework/100%20D3%20Scatterplot/datasets/consconf.json"
-    // var msti = "https://data.mprog.nl/course/10%20Homework/100%20D3%20Scatterplot/datasets/msti.json"
-    // var patents = "https://data.mprog.nl/course/10%20Homework/100%20D3%20Scatterplot/datasets/patents.json"
-
     var requests = [d3.json(womenInScience), d3.json(consConfFirst)];
 
     Promise.all(requests).then(function(response) {
@@ -22,10 +18,28 @@ function retrieveData() {
          dataConsConf = transformResponse(response[1]);
          console.log(dataMSTI);
          console.log(dataConsConf);
+         data = combineData(dataMSTI, dataConsConf);
+         console.log(data);
     }).catch(function(e){
          throw(e);
     });
 };
+
+function combineData(data1, data2) {
+
+    // set up output object, an object of objects of objects, each containing
+    // two datapoints, and the indicaters of those datapoints
+    var data_dict = {};
+    var start_year = 2007;
+    var end_year = 2016;
+
+    for(var i = start_year; i < end_year; i++) {
+      data_dict[i] = {};
+    };
+
+    // Return the finished product!
+    return data_dict;
+}
 
 function transformResponse(data) {
 
@@ -69,7 +83,7 @@ function transformResponse(data) {
                 // set up temporary object
                 let tempObj = {};
 
-                let tempString = string.split(":").slice(0, -1);
+                let tempString = string.split(":");
                 tempString.forEach(function(s, indexi){
                     tempObj[varArray[indexi].name] = varArray[indexi].values[s].name;
                 });
