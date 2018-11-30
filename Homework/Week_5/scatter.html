@@ -15,8 +15,10 @@
   <body>
     <script type="text/javascript">
       d3.select("body").append("h3").text("Scatterplot");
-      d3.select("body").append("p").text("Name: Jikke van den Ende");
-      d3.select("body").append("p").text("Student number: 10787593");
+      d3.select("body").append("p").text("Jikke van den Ende, 10787593");
+      d3.select("body").append("b").text("Data sources:");
+      d3.select("body").append("div").html("<a href ='https://stats.oecd.org/SDMX-JSON/data/MSTI_PUB/TH_WRXRS.FRA+DEU+KOR+NLD+PRT+GBR/all?startTime=2007&endTime=2015'>MSTI values</a>");
+      d3.select("body").append("div").html("<a href ='https://stats.oecd.org/SDMX-JSON/data/HH_DASH/FRA+DEU+KOR+NLD+PRT+GBR.COCONF.A/all?startTime=2007&endTime=2015'>Consumer confidence values</a>");
     </script>
   </body>
 </html>
