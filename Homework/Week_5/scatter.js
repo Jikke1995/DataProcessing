@@ -88,13 +88,31 @@ function scatterplotData(dataset) {
         .style("text-achor", "middle")
         .text("Consumer Confidence");
 
+    var colors = ["#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c"]
+
     svg.selectAll("circle")
         .data(dataset)
         .enter()
         .append("circle")
         .attr("cx", function(d) { return (svgpadding_width + xScale(d[1])); })
-        .attr("cy", function(d) { return (yScale(d[0]) - svgpadding_height); })
-        .attr("r", 5)
+        .attr("cy", function(d) { return (window_height + svgpadding_height - yScale(d[0])); })
+        .attr("r", "4")
+        .attr("fill", function(d, i) {
+            return colors[i];
+        });
+
+    // var colorLegend = svg.append("g")
+    //                       .attr("transform", "translate(50,60)");
+    //
+    // colorLegend.append("text")
+    //             .attr("class", "legend-label")
+    //             .attr("x", -30)
+    //             .attr("y", -40)
+    //             .text(colors);
+    //
+    // var colorLegend = d3.legend()
+    //                     .scale(colorScale)
+    //                     .shape('circle');
 }
 
 function combineData(data1, data2) {
