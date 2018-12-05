@@ -10,15 +10,20 @@
     <title>Scatterplot</title>
     <script type="text/javascript" src="d3/d3.js"></script>
     <script src='scatter.js'> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="scatter.css">
   </head>
   <body>
+    <div id="menu">
+<!-- 				<h2>&uarr; Y axis</h2>
+				<ul id="y-axis-menu"></ul>
+				<h2>&rarr; X axis</h2>
+ -->				<ul id="x-axis-menu"></ul>
+			</div>
     <script type="text/javascript">
-      d3.select("body").append("h3").text("Scatterplot");
-      d3.select("body").append("p").text("Jikke van den Ende, 10787593");
-      d3.select("body").append("b").text("Data sources:");
-      d3.select("body").append("div").html("<a href ='https://stats.oecd.org/SDMX-JSON/data/MSTI_PUB/TH_WRXRS.FRA+DEU+KOR+NLD+PRT+GBR/all?startTime=2007&endTime=2015'>MSTI values</a>");
-      d3.select("body").append("div").html("<a href ='https://stats.oecd.org/SDMX-JSON/data/HH_DASH/FRA+DEU+KOR+NLD+PRT+GBR.COCONF.A/all?startTime=2007&endTime=2015'>Consumer confidence values</a>");
     </script>
+    <br>
   </body>
 </html>

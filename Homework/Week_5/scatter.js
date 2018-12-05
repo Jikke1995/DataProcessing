@@ -4,46 +4,38 @@ Student number: 10787593
 
 This file contains the content of the script in the scatter.html.
 When the page is loaded a graph will be drawn.
+Used links:
+https://bl.ocks.org/anonymous/7a65777a1e310b76aca5d499e967c467
 */
 
-
-function retrieveData() {
-    var womenInScience = "http://stats.oecd.org/SDMX-JSON/data/MSTI_PUB/TH_WRXRS.FRA+DEU+KOR+NLD+PRT+GBR/all?startTime=2007&endTime=2015"
-    var consConf = "http://stats.oecd.org/SDMX-JSON/data/HH_DASH/FRA+DEU+KOR+NLD+PRT+GBR.COCONF.A/all?startTime=2007&endTime=2015"
-
-    var requests = [d3.json(womenInScience), d3.json(consConf)];
-
-    Promise.all(requests).then(function(response) {
-         dataMSTI = transformResponse(response[0]);
-         dataConsConf = transformResponse(response[1]);
-         data = combineData(dataMSTI, dataConsConf);
-         console.log(data);
-         dataset = getDatapoints2007(data);
-         console.log(dataset);
-         scatterplot = scatterplotData(dataset);
-
-    }).catch(function(e){
-         throw(e);
-    });
-
-};
-
-function getDatapoints2007(data) {
-    var data2007 = data["2007"];
-    var dataset = []
-    Object.keys(data2007).forEach(function(d) {
-        datapoints = []
-        datapoints.push(data2007[d]["datapoint ConCof"]);
-        datapoints.push(data2007[d]["datapoint MSTI"])
-        dataset.push(datapoints);
-    });
-
-    return dataset;
+function getDataPoints(data, year) {
+  var dataset = data[year];
+  var set = []
+  Object.keys(dataset).forEach(function(d) {
+      datapoints = []
+      datapoints.push(dataset[d]["datapoint ConCof"]);
+      datapoints.push(dataset[d]["datapoint MSTI"])
+      set.push(datapoints);
+  });
+  return set;
 }
 
-function scatterplotData(dataset) {
-    var svg_width = 600;
-    var svg_height = 300;
+function updateGraph(data, year) {
+    var datapoints = getDataPoints(data, year);
+    console.log(datapoints);
+    scatterplotData(data, datapoints);
+}
+
+
+function scatterplotData(data, datapoints) {
+
+    var dataset = datapoints;
+
+    console.log(data);
+    console.log(dataset);
+
+    var svg_width = 800;
+    var svg_height = 500;
     var window_width = 400;
     var window_height = 200;
     var svgpadding_width = (svg_width - window_width) / 2;
@@ -64,56 +56,92 @@ function scatterplotData(dataset) {
     var svg = d3.select("body")
                 .append("svg")
                 .attr("width", svg_width)
-                .attr("height", svg_height);
-
-    var xAxis =svg.append("g")
-                  .attr("class", "x axis")
-                  .attr("transform", "translate(" + svgpadding_width + "," + (window_height + svgpadding_height) + ")")
-                  .call(d3.axisBottom(xScale))
+                .attr("height", svg_height)
 
     svg.append("text")
-        .attr("transform","translate(" + (svgpadding_width + (window_width / 2)) + "," + (window_height + svgpadding_height + 40) + ")")
+        .attr("class", "title")
+        .attr("transform", "translate(20," + (svgpadding_height / 2 - 20) + ")")
         .style("text-achor", "middle")
-        .text("MSTI");
+        .text("Scatterplot of MSTI and Consumer Confidence Data");
+
+    var xAxis =svg.append("g")
+                  .attr("class", "x-axis")
+                  .attr("transform", "translate(" + (svgpadding_width / 2) + "," + (window_height + svgpadding_height) + ")")
+                  .call(d3.axisBottom(xScale))
+
+    var xLabel = svg.append("text")
+                    .attr("transform","translate(" + (svgpadding_width / 2 + (window_width / 2)) + "," + (window_height + svgpadding_height + 40) + ")")
+                    .style("text-achor", "middle")
+                    .text("MSTI");
 
     var yAxis = svg.append("g")
-                    .attr("class", "y axis")
-                    .attr("transform", "translate(" + svgpadding_width + "," + svgpadding_height + ")")
+                    .attr("class", "y-axis")
+                    .attr("transform", "translate(" + (svgpadding_width / 2 ) + "," + svgpadding_height + ")")
                     .call(d3.axisLeft(yScaleAxis));
 
     svg.append("text")
         .attr("transform","rotate(-90)")
-        .attr("y", svgpadding_width / 2 )
-        .attr("x", 0 - (window_height / 2) - svgpadding_height - 60)
+        .attr("y", svgpadding_width / 2 - 50 )
+        .attr("x", 0 - (window_height / 2) - svgpadding_height - 70)
         .style("text-achor", "middle")
         .text("Consumer Confidence");
 
-    var colors = ["#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c"]
+    var colors = ['#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854','#ffd92f'];
+
+    var colorLegendG = svg.append("g")
+                          .attr("transform", "translate(" + (svgpadding_width + window_width + 50) + "," + (svgpadding_height / 2 + 20) +  ")");
+
+    colorLegendG.append("text")
+                .attr("class", "legend-label")
+                .attr("x", 0)
+                .attr("y", -30)
+                .text("Countries");
+
+    var countries = ["France", "Germany", "Korea", "Netherlands", "Portugal", "United Kingdom"];
+
+    var colorScale = d3.scaleOrdinal()
+                        .domain(countries)
+                        .range(colors)
+
+
+    var colorLegend = d3.legendColor()
+                        .scale(colorScale)
+                        .shape('circle');
 
     svg.selectAll("circle")
         .data(dataset)
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return (svgpadding_width + xScale(d[1])); })
-        .attr("cy", function(d) { return (window_height + svgpadding_height - yScale(d[0])); })
+        .attr("cx", function(d) { return (svgpadding_width / 2 + xScale(d[1])); })
+        .attr("cy", function(d) { return window_height + svgpadding_height - yScale(d[0]); })
         .attr("r", "4")
         .attr("fill", function(d, i) {
             return colors[i];
         });
 
-    // var colorLegend = svg.append("g")
-    //                       .attr("transform", "translate(50,60)");
-    //
-    // colorLegend.append("text")
-    //             .attr("class", "legend-label")
-    //             .attr("x", -30)
-    //             .attr("y", -40)
-    //             .text(colors);
-    //
-    // var colorLegend = d3.legend()
-    //                     .scale(colorScale)
-    //                     .shape('circle');
-}
+    colorLegendG.call(colorLegend)
+                .selectAll('.cell text')
+                .attr("dy", "0.1em");
+
+    var years = ["2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015"];
+
+    d3.select('#x-axis-menu')
+      .selectAll('li')
+      .data(years)
+      .enter()
+      .append('li')
+      .text(function(d) { return d; })
+      .classed('selected', function(d) {
+        return d === xLabel;
+      })
+      .on('click', function(d) {
+        updateGraph(data, d);
+        console.log(d);
+        console.log("hoi");
+      });
+
+};
+
 
 function combineData(data1, data2) {
 
@@ -212,7 +240,31 @@ function transformResponse(data) {
 }
 
 
+
+
 window.onload = function() {
-    retrieveData();
-    console.log('Yes, you can!');
+  d3.select("body").append("h3").text("Scatterplot");
+  d3.select("body").append("p").text("Jikke van den Ende, 10787593");
+  d3.select("body").append("b").text("Data sources:");
+  d3.select("body").append("div").html("<a href ='https://stats.oecd.org/SDMX-JSON/data/MSTI_PUB/TH_WRXRS.FRA+DEU+KOR+NLD+PRT+GBR/all?startTime=2007&endTime=2015'>MSTI values</a>");
+  d3.select("body").append("div").html("<a href ='https://stats.oecd.org/SDMX-JSON/data/HH_DASH/FRA+DEU+KOR+NLD+PRT+GBR.COCONF.A/all?startTime=2007&endTime=2015'>Consumer confidence values</a>");
+  d3.select("body").append("br");
+
+  var womenInScience = "http://stats.oecd.org/SDMX-JSON/data/MSTI_PUB/TH_WRXRS.FRA+DEU+KOR+NLD+PRT+GBR/all?startTime=2007&endTime=2015"
+  var consConf = "http://stats.oecd.org/SDMX-JSON/data/HH_DASH/FRA+DEU+KOR+NLD+PRT+GBR.COCONF.A/all?startTime=2007&endTime=2015"
+
+  var requests = [d3.json(womenInScience), d3.json(consConf)];
+
+  Promise.all(requests).then(function(response) {
+       dataMSTI = transformResponse(response[0]);
+       dataConsConf = transformResponse(response[1]);
+       data = combineData(dataMSTI, dataConsConf);
+       console.log(data);
+       datapoints = getDataPoints(data, "2007");
+       console.log(datapoints);
+       scatterplot = scatterplotData(data, datapoints);
+
+  }).catch(function(e){
+       throw(e);
+  });
 };
