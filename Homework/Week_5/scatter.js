@@ -145,8 +145,6 @@ function scatterplotData(data, datapoints) {
       })
       .on('click', function(d) {
         updateGraph(data, d);
-        console.log(d);
-        console.log("hoi");
       });
 
 };
@@ -198,7 +196,7 @@ function transformResponse(data) {
     read for making the scatterplot. This piece of code is almost completely
     made by Tim.
     */
-    
+
     // access data property of the response
     let dataHere = data.dataSets[0].series;
 
@@ -262,6 +260,8 @@ function transformResponse(data) {
 window.onload = function() {
   d3.select("body").append("h3").text("Scatterplot");
   d3.select("body").append("p").text("Jikke van den Ende, 10787593");
+  d3.select("body").append("p").text("This scatterplot shows the correlation between the Consumer Confidence and the amount of woman researchers as a percentage of total researches for six different countries from 2007 to 2015. ");
+  d3.select("body").append("p").text("The design is not optimal (for example the menu where you can click for a different year), and the next graph will pop up below the other graph instead of as a replacement. Also the title of the next graph doesn't show which year is shown, but I didn't had enough time. I also haven't checked for missing datapoints.");
   d3.select("body").append("b").text("Data sources:");
   d3.select("body").append("div").html("<a href ='https://stats.oecd.org/SDMX-JSON/data/MSTI_PUB/TH_WRXRS.FRA+DEU+KOR+NLD+PRT+GBR/all?startTime=2007&endTime=2015'>MSTI values</a>");
   d3.select("body").append("div").html("<a href ='https://stats.oecd.org/SDMX-JSON/data/HH_DASH/FRA+DEU+KOR+NLD+PRT+GBR.COCONF.A/all?startTime=2007&endTime=2015'>Consumer confidence values</a>");
