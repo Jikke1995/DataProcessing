@@ -9,6 +9,11 @@ https://bl.ocks.org/anonymous/7a65777a1e310b76aca5d499e967c467
 */
 
 function getDataPoints(data, year) {
+/**
+This function creates an array of the datapoints of two different variables
+for every country in the dataset for a given year.
+*/
+
   var dataset = data[year];
   var set = []
   Object.keys(dataset).forEach(function(d) {
@@ -17,10 +22,14 @@ function getDataPoints(data, year) {
       datapoints.push(dataset[d]["datapoint MSTI"])
       set.push(datapoints);
   });
+
   return set;
 }
 
 function updateGraph(data, year) {
+  /**
+  This function updates the graph for a given year.
+  */
     var datapoints = getDataPoints(data, year);
     console.log(datapoints);
     scatterplotData(data, datapoints);
@@ -28,11 +37,11 @@ function updateGraph(data, year) {
 
 
 function scatterplotData(data, datapoints) {
+  /**
+  This function draws a scatterplot of given data.
+  */
 
     var dataset = datapoints;
-
-    console.log(data);
-    console.log(dataset);
 
     var svg_width = 800;
     var svg_height = 500;
@@ -144,9 +153,12 @@ function scatterplotData(data, datapoints) {
 
 
 function combineData(data1, data2) {
+    /**
+    This function combines the two given datasets in such a way every objects
+    in the final datasets contains two datapoints of two different Variables
+    for the same country.
+    */
 
-    // set up output object, an object of objects of objects, each containing
-    // two datapoints, and the indicaters of those datapoints
     var data_dict = {};
     var start_year = 2007;
     var end_year = 2016;
@@ -181,7 +193,12 @@ function combineData(data1, data2) {
 }
 
 function transformResponse(data) {
-
+    /**
+    This functions transforms the "raw" data into a usable dataset that can be
+    read for making the scatterplot. This piece of code is almost completely
+    made by Tim.
+    */
+    
     // access data property of the response
     let dataHere = data.dataSets[0].series;
 

@@ -47,6 +47,9 @@ li {
 li: hover {
   color: red;
 }
+li.preview {
+  font-weight: 400;
+}
 li.selected {
   font-weight: bold;
 }
