@@ -32,15 +32,19 @@ def select_data(file):
     # Read csv file
     reader = csv.DictReader(file)
     data = {}
+    data["2015"] = []
     # In this case, selects the data from Australia, the number of Alcohol
     # Consumption for the years 1960 to 2015.
     for row in reader:
-        if row['ï»¿"LOCATION"'] == 'AUS':
-            data['2016'] = row['Value']
+        if row["TIME"] == "2015":
+            country = {}
+            country[row['ï»¿"LOCATION"']] = row['Value']
+            data["2015"].append(country)
 
     return data
 
 if __name__ == "__main__":
     csv_file = open(INPUT_CSV, 'rU')
     data = select_data(csv_file)
+    print(data)
     jsonfile = convert_into_json_file(data)
