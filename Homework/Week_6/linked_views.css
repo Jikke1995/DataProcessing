@@ -3,5 +3,12 @@ Student number: 10787593
 This css file sets the style for the scatter html file */
 
 #barchart svg {
-    background-color: powderblue;
+    background-color: #ABDDA4;
+}
+#barchart text {
+  fill: #635F5D;
+  font-family: sans-serif;
+}
+#barchart .x-label {
+  fill: #3c3938;
 }
