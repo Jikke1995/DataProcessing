@@ -8,7 +8,7 @@ window.onload = function() {
     d3v5.json("data.json").then(function(data){
         console.log(data);
         createMap(data);
-        makeBarChart(data, 'LUX');
+        //makeBarChart(data, 'LUX');
     });
 
 };
@@ -16,8 +16,9 @@ window.onload = function() {
 function createDataDatamap(data) {
   dataDatamap = {}
   Object.keys(data).forEach(function(key) {
-
-      dataDatamap[key] = data[key]["2015"];
+    datapoint = {};
+      datapoint["alc_con"] = data[key]["2015"];
+      dataDatamap[key] = datapoint;
   });
 
   return dataDatamap;
@@ -32,9 +33,10 @@ function makeBarChart(data, country) {
 
     var svg = d3v5.select("#barchart")
               .append("svg")
+              .attr("id", "SVG")
               .attr("width", 500)
               .attr("height", 400)
-              .attr("transform", "translate(100, 100)");
+              .attr("transform", "translate(100, 50)");
 
     var country_info = data[country];
     var values = [];
@@ -43,6 +45,9 @@ function makeBarChart(data, country) {
         values.push(country_info[key]);
         years.push(key);
     });
+
+    console.log(d3v5.min(values));
+    console.log(d3v5.max(values));
 
     // Create the sscale function for the x values of the bars
     var xScale = d3v5.scaleTime()
@@ -113,26 +118,56 @@ function makeBarChart(data, country) {
         .text("Year");
 }
 
+function updateBarchart(data, country) {
+    d3v5.select("#SVG").remove();
+    makeBarChart(data, country);
+}
+
 function createMap(data) {
 
   dataset = createDataDatamap(data)
-  console.log(dataset);
+
+  Object.keys(dataset).forEach(function(country) {
+    dataset[country]["fillKey"] = "HIGH"
+  });
+
+  console.log(dataset['ARG']);
 
   var map = new Datamap({
     element: document.getElementById('container'),
-    // data: {
-    //   return dataset
-    // },
+    fills: {
+        HIGH: "#ABDDA4",
+        defaultFill: "#556e52"
+    },
+    data: dataset,
     geographyConfig: {
-        popupTemplate: function(geo, dataset) {
+        popupTemplate: function(geo, data) {
             return ['<div class="hoverinfo"><strong>',
                     geo.properties.name,
-                     // ': ' + dataset["AUS"],
+                     ': ' + dataset[geo.id]["alc_con"],
                     '</strong></div>'].join('');
+        },
+        highlightFillColor: function(data) {
+          if(data.fillKey) {
+            return '#FC8D59';
+          }
+          return "#556e52"
+        },
+        highlightBorderColor: function(data) {
+          if(data.fillKey) {
+            'rgba(250, 15, 160, 0.2)'
+          }
         }
+    },
+    done: function(datamap) {
+        datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
+            updateBarchart(data, geography.id);
+        });
     }
   });
 }
+
+
 
 function createToolTip(svg) {
   var tip = svg.append("g")
@@ -158,12 +193,4 @@ function createToolTip(svg) {
 
   return tip;
 
-}
-
-function getData() {
-    var alcohol_consumption = "data.json";
-    d3v5.json("data.json").then(function(data){
-        console.log(data);
-        console.log(data["AUS"]["2015"])
-    });
 }
