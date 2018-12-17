@@ -2,6 +2,21 @@
 Student number: 10787593
 This css file sets the style for the scatter html file */
 
+body {
+  background-color: lightyellow;
+}
+
+#information h3 {
+    font-size: 30pt;
+    font-family;
+    color:  #556e52;
+}
+#information p {
+  font-size: 10pt;
+  fill: #3c3938;
+  font-family: sans-serif;
+}
+
 #barchart svg {
     background-color: #ABDDA4;
 }
@@ -9,6 +24,17 @@ This css file sets the style for the scatter html file */
   fill: #635F5D;
   font-family: sans-serif;
 }
-#barchart .x-label {
+#barchart svg .x-label {
   fill: #3c3938;
+}
+#barchart svg .title {
+  font-size: 18pt;
+  fill:#556e52
+}
+.datamaps-legend dt, datamaps-legend dd {
+  float: none;
+}
+.datamaps-legend {
+  right: -50px;
+  top: 330px;
 }

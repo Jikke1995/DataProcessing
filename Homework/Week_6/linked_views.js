@@ -6,22 +6,25 @@ Student number: 10787593
 window.onload = function() {
 
     d3v5.json("data.json").then(function(data){
-        console.log(data);
+        showInfo();
         createMap(data);
-        //makeBarChart(data, 'LUX');
     });
 
 };
 
 function createDataDatamap(data) {
-  dataDatamap = {}
-  Object.keys(data).forEach(function(key) {
-    datapoint = {};
-      datapoint["alc_con"] = data[key]["2015"];
-      dataDatamap[key] = datapoint;
-  });
+    /**
+    This function prepares the data that the Datamap can use,
+    so a dictionary with only the datapoints from the year 2015.
+    */
+    dataDatamap = {}
+    Object.keys(data).forEach(function(key) {
+      datapoint = {};
+        datapoint["alc_con"] = data[key]["2015"];
+        dataDatamap[key] = datapoint;
+    });
 
-  return dataDatamap;
+    return dataDatamap;
 }
 
 function makeBarChart(data, country) {
@@ -36,7 +39,7 @@ function makeBarChart(data, country) {
               .attr("id", "SVG")
               .attr("width", 500)
               .attr("height", 400)
-              .attr("transform", "translate(100, 50)");
+              .attr("transform", "translate(225, 10)");
 
     var country_info = data[country];
     var values = [];
@@ -46,8 +49,8 @@ function makeBarChart(data, country) {
         years.push(key);
     });
 
-    console.log(d3v5.min(values));
-    console.log(d3v5.max(values));
+    // Calculates highest datapoint for country
+    var max = Math.round(maxValue(values));
 
     // Create the sscale function for the x values of the bars
     var xScale = d3v5.scaleTime()
@@ -56,12 +59,12 @@ function makeBarChart(data, country) {
 
     // Create the scale funtion for the y values of the bars
     var yScale = d3v5.scaleLinear()
-                    .domain([0, 20])
+                    .domain([0, max + 6])
                     .range([0, chart_height]);
 
     // Create the scale functin for the y-axis
     var yScaleAxis = d3v5.scaleLinear()
-                        .domain([0, 20])
+                        .domain([0, max + 6])
                         .range([chart_height, 0]);
 
     var rectangles = svg.selectAll("rect")
@@ -91,6 +94,15 @@ function makeBarChart(data, country) {
                 d3v5.select(this).attr("fill", "rgb(252,223,89)")
                 tip.style("display", null);
                 var xPosition = d3v5.mouse(this)[0] - 100;
+
+                // Makes sure that the tooltip doesn't partly disappear
+                if (xPosition < 2) {
+                    xPosition = 2;
+                }
+                if (xPosition + 260 > 500) {
+                    xPosition = 500 - 262
+                }
+
                 var yPosition = d3v5.mouse(this)[1] - 70;
                 tip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
                 tip.select("text").text("Alcohol consumption: " + d + ", Year: " + years[i]);
@@ -116,36 +128,102 @@ function makeBarChart(data, country) {
         .attr("transform","translate(" + (padding + chart_width / 2)  + "," + (padding + chart_height + padding - 10) + ")")
         .style("text-achor", "middle")
         .text("Year");
+
+    svg.append("text")
+        .attr("class", "title")
+        .attr("transform", "translate(" + padding + "," + (padding / 2 + 9) +")")
+        .text("Alcohol consumption over years (" + country + ")");
 }
 
 function updateBarchart(data, country) {
+    /**
+    This function updates the SVG which contains the barchart. It deletes the
+    current barchart and creates a new one with new data.
+    */
     d3v5.select("#SVG").remove();
     makeBarChart(data, country);
 }
 
+function showInfo(data, country) {
+    /**
+    This function creates the part where the title, information, sources
+    and personal information is stored.
+    */
+
+    d3v5.select("#information")
+        .append("h3")
+        .text("Alcohol consumption");
+
+    d3v5.select("#information")
+        .append("p")
+        .text("Jikke van den Ende, 10787593")
+
+    d3v5.select("#information")
+        .append("p")
+        .text("All over the world people drink alcohol. It's often seen as a "
+              + "way to relax, socialize or celebrate, but drinking too much "
+              + "or drinking as a way of dealing with feelings of anxiety or "
+              + "depression has negative consequences (Mental Health America, "
+              + "2018). Alcohol also contributes to death and disability "
+              + "through accidents and injuries, assault, violence, homicide "
+              + "and suicide (OECD, 2017). A lot of people don't realise this "
+              + "is a world-wide problem, and the over-all alcohol consumption "
+              + "is really high. This visualisation of the world shows the "
+              + "the consumption of alcohol for most of the countries for the "
+              + "latest available data, for now 2015. By clicking on a country "
+              + "where data is available a barchart will appear which shows "
+              + "the alcohol consumption over time for a given amount of "
+              + "years. For this visualisation alcohol consumption is measured "
+              + "in litres per capita (people aged 15 years and older).");
+
+    d3v5.select("#information")
+        .append("p")
+        .text("Sources: ")
+        .append("a")
+        .attr("href", "http://www.mentalhealthamerica.net/conditions/alcohol-use-and-abuse-what-you-should-know")
+        .html("Mental Health America")
+        .append("text")
+        .text(", ")
+        .append("a")
+        .attr("href", "https://data.oecd.org/healthrisk/alcohol-consumption.htm")
+        .html("OECD Health Statistics");
+}
+
 function createMap(data) {
+  /**
+  This function creates a map of the world which shows the alcohol consumption
+  for most of the countries for the year 2015.
+  */
 
   dataset = createDataDatamap(data)
 
   Object.keys(dataset).forEach(function(country) {
-    dataset[country]["fillKey"] = "HIGH"
+    dataset[country]["fillKey"] = "DATA AVAILABLE"
   });
-
-  console.log(dataset['ARG']);
 
   var map = new Datamap({
     element: document.getElementById('container'),
+    height: 400,
+    width: 900,
     fills: {
-        HIGH: "#ABDDA4",
+        "DATA AVAILABLE": "#ABDDA4",
         defaultFill: "#556e52"
     },
     data: dataset,
     geographyConfig: {
         popupTemplate: function(geo, data) {
-            return ['<div class="hoverinfo"><strong>',
+          if(dataset[geo.id] !== undefined) {
+              return ['<div class="hoverinfo"><strong>',
                     geo.properties.name,
+                    '</strong>',
                      ': ' + dataset[geo.id]["alc_con"],
-                    '</strong></div>'].join('');
+                    '</div>'].join('');
+          }
+              return ['<div class="hoverinfo"><strong>',
+                    geo.properties.name,
+                    '</strong>',
+                    ': no data available',
+                    '</div>'].join('');
         },
         highlightFillColor: function(data) {
           if(data.fillKey) {
@@ -161,15 +239,21 @@ function createMap(data) {
     },
     done: function(datamap) {
         datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
-            updateBarchart(data, geography.id);
+            if(data[geography.id] !== undefined){
+                updateBarchart(data, geography.id);
+            }
         });
     }
   });
+  map.legend({defaultFillName: 'NO DATA AVAILABLE:', legendTitle: 'MAP LEGEND'});
+
 }
 
 
-
 function createToolTip(svg) {
+  /**
+  This function creates a Tooltip (default display: not shown) that can contain text.
+  */
   var tip = svg.append("g")
                 .attr("class", "tooltip")
                 .style("display", "none")
@@ -193,4 +277,27 @@ function createToolTip(svg) {
 
   return tip;
 
+}
+
+function maxValue(array) {
+    /**
+    This function transforms the array of strings in an array of floats,
+    and returns the highest float in this array.
+    */
+
+    float_values = [];
+    array.forEach(function(d) {
+        p = parseFloat(d);
+        float_values.push(p);
+    });
+
+    var max_value = 0;
+
+    Object.keys(float_values).forEach(function(key) {
+      if(float_values[key] > max_value) {
+        max_value = float_values[key];
+      }
+    });
+
+    return max_value;
 }
