@@ -1,11 +1,10 @@
 /* Name: Jikke van den end_year
 Student number: 10787593
-This css file sets the style for the scatter html file */
+This css file sets the style for the linked_views html file */
 
 body {
   background-color: lightyellow;
 }
-
 #information h3 {
     font-size: 30pt;
     font-family;
@@ -24,12 +23,15 @@ body {
   fill: #635F5D;
   font-family: sans-serif;
 }
-#barchart svg .x-label {
+#barchart svg .x-label .y-label{
   fill: #3c3938;
 }
 #barchart svg .title {
   font-size: 18pt;
   fill:#556e52
+}
+#barchart .x-axis text {
+  fill: #ABDDA4;
 }
 .datamaps-legend dt, datamaps-legend dd {
   float: none;

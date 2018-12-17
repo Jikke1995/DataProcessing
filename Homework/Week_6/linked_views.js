@@ -1,6 +1,11 @@
 /**
 Name: Jikke van den Ende
 Student number: 10787593
+This file contains the script for the linked views HTML. It creates a datamap
+of the world, which shows (for countries with available data) the alcohol
+consumption per country for the year 2015. When clicked on a country, a barchart
+is shown which shows the alcohol consumption over multiple years for that
+country.
 */
 
 window.onload = function() {
@@ -28,6 +33,10 @@ function createDataDatamap(data) {
 }
 
 function makeBarChart(data, country) {
+    /**
+    This function creates a barchart given a dataset and the name of the
+    country the barchart needs to be for.
+    */
 
     var chart_width = 400;
     var chart_height = 300;
@@ -39,8 +48,9 @@ function makeBarChart(data, country) {
               .attr("id", "SVG")
               .attr("width", 500)
               .attr("height", 400)
-              .attr("transform", "translate(225, 10)");
+              .attr("transform", "translate(225, 30)");
 
+    // Stores the needed data into usable arrays
     var country_info = data[country];
     var values = [];
     var years = [];
@@ -67,6 +77,7 @@ function makeBarChart(data, country) {
                         .domain([0, max + 6])
                         .range([chart_height, 0]);
 
+    // Create bars for barchart
     var rectangles = svg.selectAll("rect")
                         .data(values)
                         .enter()
@@ -110,9 +121,9 @@ function makeBarChart(data, country) {
 
     //Add x-axis
     var x_axis = svg.append("g")
-                    .attr("class", "x axis")
+                    .attr("class", "x-axis")
                     .attr("transform", "translate(" + padding + "," + (chart_height + padding) + ")")
-                    .call(d3v5.axisBottom(xScale))
+                    .call(d3v5.axisBottom(xScale).ticks(values.length))
                     .selectAll("text")
                     .attr("x", 4)
                     .style("text-anchor", "middle");
@@ -123,12 +134,23 @@ function makeBarChart(data, country) {
                     .attr("transform", "translate(" + padding + "," + padding + ")")
                     .call(d3v5.axisLeft(yScaleAxis))
 
+    // Add x-axis label
     svg.append("text")
         .attr("class", "x-label")
         .attr("transform","translate(" + (padding + chart_width / 2)  + "," + (padding + chart_height + padding - 10) + ")")
         .style("text-achor", "middle")
         .text("Year");
 
+    // Add y-axis label
+    svg.append("text")
+        .attr("class", "y-label")
+        .attr("transform","rotate(-90)")
+        .attr("y", padding / 2)
+        .attr("x", 0 - (chart_height / 2) - padding - 70)
+        .style("text-achor", "middle")
+        .text("Litres per capita");
+
+    // Add title for barchart
     svg.append("text")
         .attr("class", "title")
         .attr("transform", "translate(" + padding + "," + (padding / 2 + 9) +")")
